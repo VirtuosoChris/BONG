@@ -41,13 +41,12 @@ void gameHelp()
     CallMenu();
 }
 
-void gameOptions() {
-
+void gameOptions()
+{
 }
 
 void mNewGame()
 {
-    //glsetup();
     extern int redsWon;
     extern int scores[2];
     extern unsigned char* bitmap;
@@ -77,9 +76,11 @@ void mNewGame()
 
 void makeScore(int x, int y, int color, int value)
 {
-    int i; extern score scorenums[25];
+    int i;
+    extern score scorenums[25];
 
-    for (i = 0; i < 25; i++) {
+    for (i = 0; i < 25; i++)
+    {
         if (scorenums[i].active == true) { continue; }
         scorenums[i].vtimecreated = GetTickCount64();
         scorenums[i].color = color;
@@ -89,8 +90,6 @@ void makeScore(int x, int y, int color, int value)
         scorenums[i].y = y;
         return;
     }
-
-
 }
 
 void makeParticle(int x, int y)
@@ -115,8 +114,6 @@ void makeParticle(int x, int y)
 }
 
 
-
-
 void CallMenu() {
     static BOOL cursorz = false;
     gamePaused = !gamePaused;
@@ -128,8 +125,6 @@ void CallMenu() {
     cursorz = !cursorz;
     ShowCursor(cursorz);
 }
-
-
 
 
 void setupGame()
@@ -216,7 +211,6 @@ void UpdateGame()
 
     static int winvtime;
 
-
     //extern int cursorX, cursorY;	
     SYSTEMTIME st;
     GetSystemTime(&st);
@@ -234,7 +228,6 @@ void UpdateGame()
 
     bluepaddlelast.x = bluepaddle.x;
 
-
     PaddleBall.xVec = (moveamount - bluepaddle.x);
 
     bluepaddle.x = bluepaddle.x + PaddleBall.xVec * rTime;
@@ -242,22 +235,19 @@ void UpdateGame()
     if (bluepaddle.x + bluepaddle.width > MAPBARRIER) { bluepaddle.x = MAPBARRIER - bluepaddle.width; }
     if (bluepaddle.x - bluepaddle.width < 0) { bluepaddle.x = 0 + bluepaddle.width; }
 
-
-    if (started && !gamePaused) {
-
-        for (i = 0; i < 25; i++) {
+    if (started && !gamePaused)
+    {
+        for (i = 0; i < 25; i++)
+        {
             if (particles[i].active == false) { continue; }
 
-            for (j = 0; j < 10; j++) {
-                //particles[i].parts[j][0] = (x-BLOCKWIDTH)+(rand()%(BLOCKWIDTH*2));
+            for (j = 0; j < 10; j++)
+            {
                 particles[i].parts[j][1] += (int)15 * rTime;
             }
 
-
             if (GetTickCount64() - particles[i].vtimecreated >= 1000) { particles[i].active = false; }
-
         }
-
 
         for (i = 0; i < 25; i++)
         {
@@ -266,18 +256,15 @@ void UpdateGame()
             }
 
             scorenums[i].y -= 10 * rTime;
-
         }
 
 
-        if (MainBall.round == gameRound || MainBall.round == 4) {
-
-
-
+        if (MainBall.round == gameRound || MainBall.round == 4)
+        {
             MainBall.speed = sqrt(pow((double)MainBall.xVec, 2) + pow((double)MainBall.yVec, 2));
 
-            if (MainBall.speed > MAXBALLSPEED) {
-
+            if (MainBall.speed > MAXBALLSPEED)
+            {
                 //normalize the vector
                 MainBall.xVec = MainBall.xVec / MainBall.speed;
                 MainBall.yVec = MainBall.yVec / MainBall.speed;
@@ -287,7 +274,8 @@ void UpdateGame()
 
             }
 
-            if (MainBall.speed < MINBALLSPEED) {
+            if (MainBall.speed < MINBALLSPEED)
+            {
                 MainBall.xVec = MainBall.xVec / MainBall.speed;
                 MainBall.yVec = MainBall.yVec / MainBall.speed;
                 //
@@ -295,35 +283,29 @@ void UpdateGame()
                 MainBall.yVec = MainBall.yVec * MINBALLSPEED;
             }
 
-
-
-
-
             MainBall.lx = MainBall.x;
             MainBall.ly = MainBall.y;
             MainBall.x = MainBall.x + (MainBall.xVec * rTime);
             MainBall.y = MainBall.y + (MainBall.yVec * rTime);
 
-
-
-            if (MainBall.x < 0) {
+            if (MainBall.x < 0)
+            {
                 MainBall.x = 0; MainBall.xVec = -MainBall.xVec;
-                //PlaySound("boing.wav",NULL,0x0001);
             }
-            if (MainBall.x > MAPBARRIER) {
+            if (MainBall.x > MAPBARRIER)
+            {
                 MainBall.x = MAPBARRIER; MainBall.xVec = -MainBall.xVec;
                 //PlaySound("boing.wav",NULL,0x0001);
             }
 
-
-
-            if (MainBall.y < 0) {
+            if (MainBall.y < 0)
+            {
                 MainBall.y = 0;
                 if (MainBall.belongsTo == WHITE) {
                     MainBall.yVec = -MainBall.yVec;
-                    //PlaySound("boing.wav",NULL,0x0001);
                 }
-                else {
+                else
+                {
                     MainBall.round = 0;
                     scores[RED] += 50;
                     PlaySound("boom.wav", NULL, 0x0001);
@@ -337,7 +319,8 @@ void UpdateGame()
 
                 }
             }
-            else {
+            else
+            {
                 if (MainBall.y > MAPBARRIER) {
                     MainBall.y = MAPBARRIER;
                     if (MainBall.belongsTo == WHITE) {
@@ -354,14 +337,9 @@ void UpdateGame()
                 }
             }
 
-
-
             if ((int)MainBall.xVec == 0) { MainBall.xVec = 1; }
 
-
-
             MainBall = doCollision(MainBall);//}
-
         }
 
 
@@ -369,16 +347,15 @@ void UpdateGame()
         {
             if (balls[i].round == 4 || balls[i].round == gameRound)
             {
-
                 if ((int)balls[i].xVec == 0) { balls[i].xVec = 1; }
-
 
                 if (balls[i].yVec > 0 && balls[i].yVec < MINUPV) { balls[i].yVec = MINUPV; }
                 if (balls[i].yVec < 0 && balls[i].yVec > -MINUPV) { balls[i].yVec = -MINUPV; }
 
                 balls[i].speed = sqrt(pow((double)balls[i].xVec, 2) + pow((double)balls[i].yVec, 2));
 
-                if (balls[i].speed > MAXBALLSPEED) {
+                if (balls[i].speed > MAXBALLSPEED)
+                {
                     //normalize the vector
                     balls[i].xVec = balls[i].xVec / balls[i].speed;
                     balls[i].yVec = balls[i].yVec / balls[i].speed;
@@ -387,55 +364,37 @@ void UpdateGame()
                     balls[i].yVec = balls[i].yVec * MAXBALLSPEED;
                 }
 
-
-
-                //prevent ridiculously steep angles that slow the fuck outta the gameplay
                 if (MainBall.yVec > 0 && MainBall.yVec < MINUPV) { MainBall.yVec = MINUPV; }
                 if (MainBall.yVec < 0 && MainBall.yVec > -MINUPV) { MainBall.yVec = -MINUPV; }
 
-
-                if (balls[i].speed < MINBALLSPEED) {
+                if (balls[i].speed < MINBALLSPEED)
+                {
                     balls[i].xVec = balls[i].xVec / balls[i].speed;
                     balls[i].yVec = balls[i].yVec / balls[i].speed;
-                    //
+
                     balls[i].xVec = balls[i].xVec * MINBALLSPEED;
                     balls[i].yVec = balls[i].yVec * MINBALLSPEED;
                 }
-
-
-
 
                 balls[i].lx = balls[i].x;
                 balls[i].ly = balls[i].y;
                 balls[i].x = balls[i].x + (balls[i].xVec * rTime);
                 balls[i].y = balls[i].y + (balls[i].yVec * rTime);
-                //if(0<=balls[i].xVec<1){balls[i].xVec = 1;}
+
                 if ((int)balls[i].xVec == 0) { balls[i].xVec = 1; }
-                //if(balls[i].xVec == 0){balls[i].xVec = 10;}
-                //balls[i].xVec = -.1;
 
-
-
-
-
-                if (balls[i].x < 0) {
+                if (balls[i].x < 0)
+                {
                     balls[i].x = 0; balls[i].xVec = -balls[i].xVec;
-                    //PlaySound("boing.wav",NULL,0x0001);
                 }
-                if (balls[i].x > MAPBARRIER) {
+                if (balls[i].x > MAPBARRIER)
+                {
                     balls[i].x = MAPBARRIER; balls[i].xVec = -balls[i].xVec;
-                    //PlaySound("boing.wav",NULL,0x0001);
-                                //collision = true;
                 }
-
-
-                //if(balls[i].y >= MAPBARRIER || balls[i].y <= 0){balls[i].yVec = -balls[i].yVec;
-                //collision = true;
-                //}
-
 
                 //////////////////////////////////////////////
-                if (balls[i].y > MAPBARRIER) {
+                if (balls[i].y > MAPBARRIER)
+                {
                     balls[i].y = MAPBARRIER;
                     balls[i].yVec = -balls[i].yVec;
                     ////////////////////
@@ -452,16 +411,15 @@ void UpdateGame()
                 }
                 /////////////////////////////////////////////////////////
 
-
-
-
-                if (balls[i].y < 0) {
+                if (balls[i].y < 0)
+                {
                     balls[i].y = 0;
-                    if (balls[i].belongsTo == WHITE) {
+                    if (balls[i].belongsTo == WHITE)
+                    {
                         balls[i].yVec = -balls[i].yVec;
-                        //PlaySound("boing.wav",NULL,0x0001);
                     }
-                    else {
+                    else
+                    {
                         balls[i].round = 0;
                         PlaySound("boom.wav", NULL, 0x0001);
                         scores[RED] += 50;
@@ -470,11 +428,6 @@ void UpdateGame()
                     }
                 }
 
-
-
-
-
-
                 balls[i] = doCollision(balls[i]);
             }
         }
@@ -482,21 +435,20 @@ void UpdateGame()
         followballs();
     }
 
-
-    if (gMessage.active && !gamePaused) {
+    if (gMessage.active && !gamePaused)
+    {
         gMessage.x += 30 * rTime;
         if (gMessage.x > resWidth) { gMessage.active = false; }
     }
 
-
-
     extern int lastBroken;
 
-    if (lastBroken != WHITE) {
-
+    if (lastBroken != WHITE)
+    {
         int blocksleft = 0;
 
-        for (i = 0; i < 3000; i++) {
+        for (i = 0; i < 3000; i++)
+        {
             if (blocks[i].round == 4 || blocks[i].round == gameRound)
             {
                 if (blocks[i].broken == false) {
@@ -505,64 +457,50 @@ void UpdateGame()
             }
         }
 
-
-        if (blocksleft == 0 && gameRound <= 3) {
-            //if(round < 3){
+        if (blocksleft == 0 && gameRound <= 3)
+        {
             char tmpstring[10];
 
             gMessage.active = true;
             gMessage.x = 0;
             scores[lastBroken] += 100;
 
-            switch (lastBroken) {
-            case RED: sprintf(tmpstring, "Red"); break;
-            case BLUE:sprintf(tmpstring, "Blue"); break;
+            switch (lastBroken)
+            {
+                case RED: sprintf(tmpstring, "Red"); break;
+                case BLUE:sprintf(tmpstring, "Blue"); break;
             }
 
             sprintf(gMessage.msg, "%s Cleared the Map!", tmpstring);
             lastBroken = WHITE;
-
-            //readFile();
-            //setupGame();
-
-            //round ++;
-        //started = false;
-        //}
         }
-
-
     }
 
     int ballsleft = 0;
     int coloredballsleft = 0;
     static bool moveon = false;
 
-
-    if (MainBall.round == gameRound || MainBall.round == 4) {
+    if (MainBall.round == gameRound || MainBall.round == 4)
+    {
         ballsleft++;
-
         if (MainBall.belongsTo != WHITE) { coloredballsleft++; }
-
     }
 
-    for (i = 0; i < 500; i++) {
-        if (balls[i].round == gameRound || balls[i].round == 4) {
+    for (i = 0; i < 500; i++)
+    {
+        if (balls[i].round == gameRound || balls[i].round == 4)
+        {
             ballsleft++;
             if (balls[i].belongsTo != WHITE) { coloredballsleft++; }
-
         }
     }
 
-
-
-
-
-    if (ballsleft == 0) {
-        //	if(round < 3){
-
-        if (moveon == false) {
-
-            if (gameRound == 3) {//round =4;
+    if (ballsleft == 0)
+    {
+        if (moveon == false)
+        {
+            if (gameRound == 3)
+            {
                 modifier = 0;
                 if (scores[RED] > scores[BLUE]) { redsWon++; }
             }
@@ -570,40 +508,35 @@ void UpdateGame()
             moveon = true;
             winvtime = time(0);
 
-
             tRedPts += scores[RED];
             tBluePts += scores[BLUE];
 
-
-
-
             gMessage.active = true;
 
-            if (gameRound < 3) {
-
-                if (scores[RED] > scores[BLUE]) {
+            if (gameRound < 3) 
+            {
+                if (scores[RED] > scores[BLUE])
+                {
                     sprintf(gMessage.msg, "Round Over! You lose!");
                 }
                 else { sprintf(gMessage.msg, "Round Over! You Win!"); }
             }
-            else {
-                if (tRedPts > tBluePts) {
+            else
+            {
+                if (tRedPts > tBluePts)
+                {
                     sprintf(gMessage.msg, "Red Wins the Map with %d Points!", tRedPts);
                 }
                 else { sprintf(gMessage.msg, "Blue Wins the Map with %d Points!", tBluePts); }
-
             }
-
 
             gMessage.x = 0;
 
 
         }
 
-
-
-        if (time(0) - winvtime >= 5) {
-            //
+        if (time(0) - winvtime >= 5)
+        {
             if (gameRound < 3)
             {
                 if (scores[RED] > scores[BLUE]) { redsWon++; }
@@ -615,33 +548,25 @@ void UpdateGame()
 
                 setupGame();
 
-
                 started = false;
             }
-
-            else {
-                //bitmap = LoadBmp("TitleScreen.bmp");
-                //glSetup();
+            else
+            {
                 bluepaddle.x = NULL;
                 gameRound = 0;
                 CallMenu();
             }
-
-
-
-
         }
-        //}
     }
 
 
 
 
-    if (coloredballsleft == 0 && ballsleft != 0 && MainBall.round == 0) {
+    if (coloredballsleft == 0 && ballsleft != 0 && MainBall.round == 0)
+    {
         MainBall.round = gameRound;
         MainBall.x = bluepaddle.x;
         MainBall.y = bluepaddle.y + bluepaddle.height + MainBall.radius;
-
 
         MainBall.yVec = 1;
         MainBall.xVec = 0;
@@ -653,6 +578,7 @@ void UpdateGame()
 
         gMessage.active = true;
         gMessage.x = 0;
+
         sprintf(gMessage.msg, "Mercy Ball!");
     }
 
