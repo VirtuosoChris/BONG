@@ -6,4 +6,9 @@ I don't really have any interest in porting the game to new tech or remaking it 
 1) for posterity
 2) I can do some cleanup / refactoring so the code is legible and easy to build
 
-![350626287-94cffcd7-ad5c-4720-af3a-a973d60cbe6c](https://github.com/user-attachments/assets/a82ba729-f0b6-4b13-a785-4558bbce708f)
+The editor rc file is lost media, so I'm trying to recreate that without code changes.
+
+The crappy MSPaint textures I made as well as the sound files are lost media as well, resulting in a minimalist appearance that is actually better than the original.
+
+https://github.com/user-attachments/assets/7173ad47-118e-4bc2-8086-be9f0fee34ff
+
