@@ -12,7 +12,6 @@ MENUITEM "E&xit", ID_FILE_EXIT
 END
 POPUP "&Options"
 BEGIN
-MENUITEM "&Goto", ID_OPTIONS_GOTO
 MENUITEM "&Grid", ID_OPTIONS_GRID
 MENUITEM "&Minimap", ID_OPTIONS_MINIMAP
 MENUITEM "&Map Options", ID_OPTIONS_MAP
@@ -29,4 +28,12 @@ BEGIN
 MENUITEM "&About", ID_HELP_ABOUT
 MENUITEM "&Maximums", ID_HELP_MAXIMUMS
 END
+END
+
+// Define the dialog resource
+IDD_MAP DIALOGEX 0, 0, 200, 200
+CAPTION "Map Options"
+FONT 8, "MS Shell Dlg"
+BEGIN
+// Add other controls as needed
 END
