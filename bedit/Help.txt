@@ -1,0 +1,56 @@
+This version of the editor is feature complete and working except for the selection of music and background files.
+These features will be seamlessly integrated, however, once their implementation into the actual game is decided upon.
+Additionally, the bouncers need non integer reflection numbers . .. I'll change that when I get a chance.
+Report any bugs to me, Chris Pugh, at MBRAM32@aol.com.
+
+Note to self. .. add text description to file
+
+Guide to the game:
+The game, at its simplest, is a combination of Breakout and Pong (hence Bong) style games, including elements of pinball.
+The editor is a program that will allow creation of maps for this game.  The amound of flexibility in map creation allows 
+gameplay that is unique and not seen in any other game in the genre--much more interesting than the concept may at first sound.
+The gameplay is broken up into 3 rounds--each round ends when all the breakable blocks for that round are gone, and the
+side with the most overall points wins.  The side who wins 2/3 or more of the rounds wins that map. The ball is assigned
+a color based on the paddle that hit it last or other factors listed below.  Points from blocks or other objects are
+given to the side who "has" the ball.
+
+Objects:  Collisions give various amounts of points, but blocks give the most
+Blocks: See above.  When destroyed there is a random chance of a powerup.  There are at least a dozen in the final game.
+
+Bricks: Shaped Like blocks, only they are indestructible and yield no points.  
+
+Balls:These are "extra" of the main ball.  Remember to add an angle and a speed or it will be stationary. .. unless that is
+your intent.  Up to four per round, including the main ball not placed in the editor.  The game will splitscreen to follow them.
+
+Essences: Round spheres of influence that change the ball to the color of the essence if it passes through
+
+Bouncers:Bouncers.  Set the reflection multiplier in the object properties screen.
+	FIX: At present only integers are possible.  This will change soon?
+
+Paddle: hit the ball with these to change it to your color.
+
+Goals: Giant boxes of your opponent (or your) color.  When one team has the ball and hits an opponent's goal, they 
+will "steal" points from that team.  
+
+
+-To place an item, select the type you want from the menu and leftclick on the map.  To edit or delete that item, rightclick it.
+
+-Main Paddles are a single instance object which must be placed in order to save.  They are the "main" paddles of the game
+and the "main" ball (not placed in the editor) of the game will randomly spawn each round on either the red or the blue.  The other balls placed in the
+editor are extras, as are the extra paddles.  Do not place more than 3 balls per round, because, including the mainball, that would
+be greater than 4, which is the maximum the game will allow per round-- the game splitscreens to follow up to 4 balls but no more
+Paddles, main and extra,  are the the only object that is not assigned a round--they are automattically omnipresent.
+
+All objects will be assigned the current round selected from the menu. Only objects from the current round will be shown.
+Assigning an object round omnipresent (or "4" from the properties box) will make it "omnipresent", that is, an object that
+will appear in all three rounds.  This is useful for hashing out map skeletons.  
+
+-The place-center from the grid menu make precise map editing easier, acting as if the game were tile based, but loses some freedom of movement.
+It is on by default.  You can adjust these settings, change the dimensions of the grid, and its start position from the GRID menu
+-You may place up to 3000 of each color of each object except extra balls, which you may place nine of, and 
+extra paddles, which you may place 3 of.  This base of objects stretches across all rounds. If you need to place another
+you will have to delete one in another location.
+-Objects may not be placed outside the white map outline.  If you need more space go to the map options
+menu and increase the size of the mapbarrier.
+-The MiniMap gives a visual overview of the entire map.  A red dot represents the point where the current view is centered.
+The current view can be changed with the scrollbars or the "go to" function on the menu.

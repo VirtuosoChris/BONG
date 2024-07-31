@@ -1,0 +1,47 @@
+BONG Map Editor
+
+This Version of the editor is certainly usable and is "done" but there are a number
+of places it could use improvement. 
+
+Such as . . . 
+
+For one, a minimum amount of effort could be invested in fixing the window resize function
+so the user can resize the window without distorting the cursor coordinates.
+
+Additionally, the minimap window causes a significant hit in performance.  This could be fixed.
+
+Spots in the Map Options Menu for music and background files have been left, as well as
+music files.  String space will be reserved in the file system too.
+These are not usable at present because I have no idea what forms these
+two features will take in the game so they don't work in the editor yet.  I don't even know if
+the final game will have image backgrounds or not. . . Music of some sort is a certainty however.
+Whether the backgrounds will be left blank, use image backgrounds or have procedural, trippy effects
+is as of yet unknown
+
+Clicking and dragging, as well as multiple selection would be convenient.  Notices where 2 objects have the same
+coordinates would prevent "waste" -- or maybe just prevent multiple placement of objects of the same type
+
+
+click to location on minimap
+
+
+additionally there are several messy areas of code that could be cleaned up for my own personal 
+satisfaction
+
+Row/column creation tools?
+
+lock keys-- helps draw in straight lines
+
+Intelligent ball placing--no the editor is not idiot proof use warning in helpfile instead
+
+____________________________________________________
+
+***brick-spawned balls that will disappear at the end of
+each round.
+**start ball on random mainpaddle
+
+
+
+
+
+a GOOD helpfile
