@@ -32,7 +32,7 @@ extern bouncer   *selectedbouncer;
 extern essence   *selectedessence;
 extern ball *selectedball;
 
-
+// object properties dialog
 INT_PTR  CALLBACK DlgProcObject(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
     BOOL transsuc = FALSE;
@@ -235,6 +235,8 @@ INT_PTR  CALLBACK DlgProcObject(HWND hDlg, UINT message, WPARAM wParam, LPARAM l
 return FALSE;
 }
 
+
+// map options dialog
 INT_PTR  CALLBACK DlgProcOpt(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam){
     BOOL transsuc = FALSE;
 
@@ -287,7 +289,7 @@ return FALSE;
 }
 
 
-
+// unneeded so left un hooked up.  goes to map position.  really shouldn't need this.
 INT_PTR CALLBACK DlgProcGoTo(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
     BOOL transsuc = FALSE;
