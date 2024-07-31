@@ -10,7 +10,5 @@ The editor rc file is lost media, so I'm trying to recreate that without code ch
 
 The crappy MSPaint textures I made as well as the sound files are lost media as well, resulting in a minimalist appearance that is actually better than the original.
 
-![350626287-94cffcd7-ad5c-4720-af3a-a973d60cbe6c](https://github.com/user-attachments/assets/a82ba729-f0b6-4b13-a785-4558bbce708f)
-
 https://github.com/user-attachments/assets/7173ad47-118e-4bc2-8086-be9f0fee34ff
 
