@@ -235,12 +235,13 @@ return FALSE;
 
 
 // map options dialog
-INT_PTR  CALLBACK DlgProcOpt(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam){
+INT_PTR  CALLBACK DlgProcOpt(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
+{
     BOOL transsuc = FALSE;
 
-OPENFILENAME lofn;
-TCHAR lszFilter[] = TEXT("BONG MAPS(*.bng)\0*.bng\0");
-TCHAR lszFileName[MAX_PATH], lszTitleName[MAX_PATH];
+    OPENFILENAME lofn;
+    TCHAR lszFilter[] = TEXT("BONG MAPS(*.bng)\0*.bng\0");
+    TCHAR lszFileName[MAX_PATH], lszTitleName[MAX_PATH];
 
     switch(message)
     {
