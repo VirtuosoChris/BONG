@@ -2,6 +2,8 @@
 // Microsoft Visual C++ generated include file.
 // Used by bedit.rc
 //
+#include <WinUser.h>
+
 #define menu                            101
 #define ID_FILE_OPTIONS                 102
 #define ID_FILE_OPEN103                 103

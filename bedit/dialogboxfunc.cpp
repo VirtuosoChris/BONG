@@ -77,9 +77,7 @@ INT_PTR  CALLBACK DlgProcObject(HWND hDlg, UINT message, WPARAM wParam, LPARAM l
             {
                 SetDlgItemInt(hDlg, IDC_EDIT1, selectedessence->x, TRUE);//x
                 SetDlgItemInt(hDlg, IDC_EDIT2, selectedessence->y, TRUE);//y
-
                 SetDlgItemInt(hDlg, IDC_EDIT5, selectedessence->round, TRUE);//round #
-
                 SetDlgItemInt(hDlg, IDC_EDIT8, selectedessence->radius, TRUE);//radius
             }
 
@@ -266,9 +264,6 @@ TCHAR lszFileName[MAX_PATH], lszTitleName[MAX_PATH];
                 ///////////////////////////////////////////////////
                 ///////////////////////////////////////////////////
 
-
-
-
                 case IDOK:  MAPBARRIER = GetDlgItemInt(hDlg, IDC_EDIT1,&transsuc,TRUE);
                             if(xpos >MAPBARRIER){xpos = MAPBARRIER;roundcoordinate();}
                             if(xpos < 0){xpos = 0;roundcoordinate();}
@@ -311,10 +306,22 @@ INT_PTR CALLBACK DlgProcGoTo(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPar
             {
                 case IDOK:  xpos = GetDlgItemInt(hDlg, IDC_EDIT1,&transsuc,TRUE);
                             ypos = GetDlgItemInt(hDlg, IDC_EDIT2,&transsuc,TRUE);
-                            if(xpos >MAPBARRIER){xpos = MAPBARRIER;roundcoordinate();}
-                            if(xpos < 0){xpos = 0;roundcoordinate();}
-                            if(ypos > MAPBARRIER){ypos = MAPBARRIER;roundcoordinate();}
-                            if(ypos < 0){ypos = 0;roundcoordinate();}
+                            if(xpos >MAPBARRIER)
+                            {
+                                xpos = MAPBARRIER;roundcoordinate();
+                            }
+                            if(xpos < 0)
+                            {
+                                xpos = 0;roundcoordinate();
+                            }
+                            if(ypos > MAPBARRIER)
+                            {
+                                ypos = MAPBARRIER;roundcoordinate();
+                            }
+                            if(ypos < 0)
+                            {
+                                ypos = 0;roundcoordinate();
+                            }
                             SetScrollPos(hwnd, SB_VERT, ypos, TRUE);
                             SetScrollPos(hwnd, SB_HORZ, xpos, TRUE);
                             EndDialog(hDlg, 0);
