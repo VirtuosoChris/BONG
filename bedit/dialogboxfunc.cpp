@@ -174,8 +174,6 @@ INT_PTR  CALLBACK DlgProcObject(HWND hDlg, UINT message, WPARAM wParam, LPARAM l
                     
                         if(selectedball->round <1 || selectedball->round > 4){selectedball->round = 1;}
                         if(selectedball->radius <1){selectedball->radius = 2;}
-
-                        //if(selectedball->
                     }
 
                     if(selectedessence)
