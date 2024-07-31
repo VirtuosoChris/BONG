@@ -1,7 +1,8 @@
 This version of the editor is feature complete and working except for the selection of music and background files.
 These features will be seamlessly integrated, however, once their implementation into the actual game is decided upon.
 Additionally, the bouncers need non integer reflection numbers . .. I'll change that when I get a chance.
-Report any bugs to me, Chris Pugh, at MBRAM32@aol.com.
+
+Report any bugs to me, Chris Pugh VIA THE GAME'S GITHUB PAGE.
 
 Note to self. .. add text description to file
 
