@@ -50,7 +50,8 @@ void mNewGame()
     modifier = 1;
 
     bitmap = LoadBMP(imgString);
-    if (bitmap != NULL) {
+    if (bitmap != NULL)
+    {
         biHeadBck = biHead;
     }
 
@@ -105,7 +106,8 @@ void makeParticle(int x, int y)
 }
 
 
-void CallMenu() {
+void CallMenu()
+{
     static BOOL cursorz = false;
     gamePaused = !gamePaused;
     gameMenuButtons[NEWGAME].visible = !gameMenuButtons[NEWGAME].visible;
