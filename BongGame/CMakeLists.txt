@@ -26,3 +26,5 @@ target_link_libraries(BongGame OpenGL::GL OpenGL::GLU winmm)
 set_target_properties(BongGame PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
 
 set_target_properties(BongGame PROPERTIES LINK_FLAGS "/ENTRY:WinMainCRTStartup")
+
+target_include_directories(BongGame PUBLIC ../Common)

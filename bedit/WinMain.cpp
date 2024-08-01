@@ -3,11 +3,7 @@
 #include <gl/gl.h>
 #include <gl/glu.h>
 #include "resource.h"
-
-//x = 0 bug
-//que
-//draw order
-
+#include <cassert>
 
 char objectstring[100];
 
@@ -66,28 +62,11 @@ char musString[100];
 
 HINSTANCE hInstanceG;
 
-goal redgoals[3000];
-goal bluegoals[3000];
-brick bricks[3000];
-brick blocks[3000];
-paddle redpaddle;//eventually add ability to add more paddles
-paddle bluepaddle;
-paddle rpaddles[4];
-paddle bpaddles[4];
-bouncer bouncers[3000];
-essence redessences[3000];
-essence blueessences[3000];
-ball balls[500];
+SelectedObjectState selectedObject;
 
-goal* selectedgoal = NULL;
-brick* selectedbrick = NULL;
-paddle* selectedpaddle = NULL;
-bouncer* selectedbouncer = NULL;
-essence* selectedessence = NULL;
-ball* selectedball = NULL;
+BongMapLegacy mapData;
 
 HWND hwnd;
-int MAPBARRIER = DEFAULT;
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
@@ -97,10 +76,10 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
     {
     case WM_CREATE:
 
-        bluepaddle.x = 500;
+        mapData.bluePaddle.x = 500;
 
-        SetScrollRange(hwnd, SB_VERT, 0, MAPBARRIER, FALSE);
-        SetScrollRange(hwnd, SB_HORZ, 0, MAPBARRIER, FALSE);
+        SetScrollRange(hwnd, SB_VERT, 0, mapData.mapBarrier, FALSE);
+        SetScrollRange(hwnd, SB_HORZ, 0, mapData.mapBarrier, FALSE);
         SetScrollPos(hwnd, SB_HORZ, xpos, FALSE);
         SetScrollPos(hwnd, SB_VERT, ypos, TRUE);
 
@@ -116,17 +95,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
         SelectObject(hDC, font);
         wglUseFontBitmaps(hDC, 32, 96, base);
 
-
-        //hDC = GetDC(hwndCh);
-        //SetPixelFormat(hdCh, ChoosePixelFormat(hdCh, &pfd),&pfd);
-        //hRCh = wglCreateContext(hdCh);
-
-
         return 0;
-        //case WM_QUIT: return 0;
-
-        //////////////////////////////////////
-        /////////////////////////////////////
 
     case WM_MOUSEMOVE:
         cx = (int)LOWORD(lParam);
@@ -141,233 +110,8 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
         return 0;
 
     case WM_LBUTTONDOWN:
-        switch (object) {
-        case ID_PADDLE_RED:
-            if (xpos - (resWidth / 2) + (int)LOWORD(lParam) > MAPBARRIER || xpos - (resWidth / 2) + (int)LOWORD(lParam) < 0 || ypos - (resHeight / 2) + (int)HIWORD(lParam) > MAPBARRIER || ypos - (resHeight / 2) + (int)HIWORD(lParam) < 0) {
-                break;
-            }
-            redpaddle.color = RED;
-            redpaddle.height = PADDLEHEIGHT;
-            redpaddle.width = PADDLEWIDTH;
-            redpaddle.x = xpos - (resWidth / 2) + (int)LOWORD(lParam);
-            redpaddle.y = ypos - (resHeight / 2) + (int)HIWORD(lParam);
 
-            break;
-
-
-        case ID_PADDLE_BLUE:
-            if (xpos - (resWidth / 2) + (int)LOWORD(lParam) > MAPBARRIER || xpos - (resWidth / 2) + (int)LOWORD(lParam) < 0 || ypos - (resHeight / 2) + (int)HIWORD(lParam) > MAPBARRIER || ypos - (resHeight / 2) + (int)HIWORD(lParam) < 0) {
-                break;
-            }
-            bluepaddle.color = BLUE;
-            bluepaddle.height = PADDLEHEIGHT;
-            bluepaddle.width = PADDLEWIDTH;
-            bluepaddle.x = xpos - (resWidth / 2) + (int)LOWORD(lParam);
-            bluepaddle.y = ypos - (resHeight / 2) + (int)HIWORD(lParam);
-
-            break;
-
-        case ID_OBJECT_BRICK:
-            for (i = 0; i < 3000; i++) {
-                if (bricks[i].round) { continue; }
-                bricks[i].breakable = FALSE;
-                bricks[i].round = gameRound;
-                bricks[i].height = BLOCKHEIGHT;
-                bricks[i].width = BLOCKWIDTH;
-                bricks[i].x = xpos - (resWidth / 2) + (int)LOWORD(lParam);
-                bricks[i].y = ypos - (resHeight / 2) + (int)HIWORD(lParam);
-                /////////////////////////////////////////////
-                if (gridplacecenter == true) {
-                    if (bricks[i].y > 0 && bricks[i].y < MAPBARRIER)
-                    {
-                        if (bricks[i].x < MAPBARRIER && bricks[i].x > 0)
-                        {
-                            bricks[i].x = bricks[i].x - gridoffsetX;
-                            bricks[i].y = bricks[i].y - gridoffsetY;
-                            bricks[i].x = (bricks[i].x / gridwidth) * gridwidth + (.5 * gridwidth) + gridoffsetX;
-                            bricks[i].y = (bricks[i].y / gridheight) * gridheight + (.5 * gridheight) + gridoffsetY;
-                        }
-                    }
-                }
-
-                if (bricks[i].x > MAPBARRIER || bricks[i].x < 0 || bricks[i].y > MAPBARRIER || bricks[i].y < 0) {
-                    bricks[i].round = NULL;
-                }
-                ////////////////////////////////////////////
-                return 0;
-            }toomany(); return 0;
-
-        case ID_OBJECT_BLOCK:
-            for (i = 0; i < 3000; i++)
-            {
-                if (blocks[i].round) { continue; }
-                blocks[i].breakable = TRUE;
-                blocks[i].height = BLOCKHEIGHT;
-                blocks[i].width = BLOCKWIDTH;
-                blocks[i].round = gameRound;
-                blocks[i].x = xpos - (resWidth / 2) + (int)LOWORD(lParam);
-                blocks[i].y = ypos - (resHeight / 2) + (int)HIWORD(lParam);
-
-
-
-                if (gridplacecenter == true) {
-                    if (blocks[i].y > 0 && blocks[i].y < MAPBARRIER) {
-                        if (blocks[i].x < MAPBARRIER && blocks[i].x > 0) {
-                            blocks[i].x = (((blocks[i].x - gridoffsetX) / gridwidth) * gridwidth) + (.5 * gridwidth) + gridoffsetX;
-                            blocks[i].y = (((blocks[i].y - gridoffsetY) / gridheight) * gridheight) + (.5 * gridheight) + gridoffsetY;
-                        }
-                    }
-                }
-
-                if (blocks[i].x > MAPBARRIER || blocks[i].x < 0 || blocks[i].y > MAPBARRIER || blocks[i].y < 0)
-                {
-                    blocks[i].round = NULL;
-                }
-
-                return 0;
-            }
-            toomany();
-            return 0;
-
-
-        case ID_OBJECT_BALL142:
-            for (i = 0; i < 500; i++) {
-                if (balls[i].round) { continue; }
-                balls[i].round = gameRound;
-                balls[i].x = xpos - (resWidth / 2) + (int)LOWORD(lParam);
-                balls[i].y = ypos - (resHeight / 2) + (int)HIWORD(lParam);
-                balls[i].radius = BALLSIZE;
-
-                if (balls[i].x > MAPBARRIER || balls[i].x < 0 || balls[i].y > MAPBARRIER || balls[i].y < 0) {
-                    balls[i].round = NULL;
-                }
-
-                return 0;
-            }
-            toomany();
-            return 0;
-        case ID_ESSENCE_RED:
-            for (i = 0; i < 3000; i++) {
-                if (redessences[i].round) { continue; }
-                redessences[i].radius = ESSENCERADIUS;
-                redessences[i].round = gameRound;
-                redessences[i].x = xpos - (resWidth / 2) + (int)LOWORD(lParam);
-                redessences[i].y = ypos - (resHeight / 2) + (int)HIWORD(lParam);
-                if (gridplacecenter == true) {
-                    if (redessences[i].y > 0 && redessences[i].y < MAPBARRIER) {
-                        if (redessences[i].x < MAPBARRIER && redessences[i].x > 0) {
-                            redessences[i].x = (((redessences[i].x - gridoffsetX) / gridwidth) * gridwidth) + (.5 * gridwidth) + gridoffsetX;
-                            redessences[i].y = (((redessences[i].y - gridoffsetY) / gridheight) * gridheight) + (.5 * gridheight) + gridoffsetY;
-                        }
-                    }
-                }
-
-                if (redessences[i].x > MAPBARRIER || redessences[i].x < 0 || redessences[i].y > MAPBARRIER || redessences[i].y < 0) {
-                    redessences[i].round = NULL;
-                }
-
-                return 0;
-            }toomany(); return 0;
-
-        case ID_ESSENCE_BLUE:
-            for (i = 0; i < 3000; i++) {
-                if (blueessences[i].round) { continue; }
-                blueessences[i].radius = ESSENCERADIUS;
-                blueessences[i].round = gameRound;
-                blueessences[i].x = xpos - (resWidth / 2) + (int)LOWORD(lParam);
-                blueessences[i].y = ypos - (resHeight / 2) + (int)HIWORD(lParam);
-                if (gridplacecenter == true) {
-                    if (blueessences[i].y > 0 && blueessences[i].y < MAPBARRIER) {
-                        if (blueessences[i].x < MAPBARRIER && blueessences[i].x > 0) {
-                            blueessences[i].x = (((blueessences[i].x - gridoffsetX) / gridwidth) * gridwidth) + (.5 * gridwidth) + gridoffsetX;
-                            blueessences[i].y = (((blueessences[i].y - gridoffsetY) / gridheight) * gridheight) + (.5 * gridheight) + gridoffsetY;
-                        }
-                    }
-                }
-
-                if (blueessences[i].x > MAPBARRIER || blueessences[i].x < 0 || blueessences[i].y > MAPBARRIER || blueessences[i].y < 0) {
-                    blueessences[i].round = NULL;
-                }
-
-
-                return 0;
-            }toomany(); return 0;
-
-        case ID_OBJECT_BOUNCER:
-            for (i = 0; i < 3000; i++) {
-                if (bouncers[i].round) { continue; }
-                bouncers[i].radius = ESSENCERADIUS;
-                bouncers[i].round = gameRound;
-                bouncers[i].x = xpos - (resWidth / 2) + (int)LOWORD(lParam);
-                bouncers[i].y = ypos - (resHeight / 2) + (int)HIWORD(lParam);
-                bouncers[i].multiplier = 1;
-                if (gridplacecenter == true) {
-                    if (bouncers[i].y > 0 && bouncers[i].y < MAPBARRIER) {
-                        if (bouncers[i].x < MAPBARRIER && bouncers[i].x > 0) {
-                            bouncers[i].x = (((bouncers[i].x - gridoffsetX) / gridwidth) * gridwidth) + (.5 * gridwidth) + gridoffsetX;
-                            bouncers[i].y = (((bouncers[i].y - gridoffsetY) / gridheight) * gridheight) + (.5 * gridheight) + gridoffsetY;
-                        }
-                    }
-                }
-
-                if (bouncers[i].x > MAPBARRIER || bouncers[i].x < 0 || bouncers[i].y > MAPBARRIER || bouncers[i].y < 0) {
-                    bouncers[i].round = NULL;
-                }
-                return 0;
-            }toomany(); return 0;
-
-        case ID_GOAL_RED:
-            for (i = 0; i < 3000; i++) {
-                if (redgoals[i].round) { continue; }
-                redgoals[i].width = GOALWIDTH;
-                redgoals[i].color = RED;
-                redgoals[i].height = GOALHEIGHT;
-                redgoals[i].round = gameRound;
-                redgoals[i].x = xpos - (resWidth / 2) + (int)LOWORD(lParam);
-                redgoals[i].y = ypos - (resHeight / 2) + (int)HIWORD(lParam);
-                if (gridplacecenter == true) {
-                    if (redgoals[i].y > 0 && redgoals[i].y < MAPBARRIER) {
-                        if (redgoals[i].x < MAPBARRIER && redgoals[i].x > 0) {
-                            redgoals[i].x = (((redgoals[i].x - gridoffsetX) / gridwidth) * gridwidth) + (.5 * gridwidth) + gridoffsetX;
-                            redgoals[i].y = (((redgoals[i].y - gridoffsetY) / gridheight) * gridheight) + (.5 * gridheight) + gridoffsetY;
-                        }
-                    }
-                }
-
-                if (redgoals[i].x > MAPBARRIER || redgoals[i].x < 0 || redgoals[i].y > MAPBARRIER || redgoals[i].y < 0) {
-                    redgoals[i].round = NULL;
-                }
-
-                return 0;
-            }toomany(); return 0;
-
-        case ID_GOAL_BLUE:
-            for (i = 0; i < 3000; i++) {
-                if (bluegoals[i].round) { continue; }
-                bluegoals[i].width = GOALWIDTH;
-                bluegoals[i].color = BLUE;
-                bluegoals[i].height = GOALHEIGHT;
-                bluegoals[i].round = gameRound;
-                bluegoals[i].x = xpos - (resWidth / 2) + (int)LOWORD(lParam);
-                bluegoals[i].y = ypos - (resHeight / 2) + (int)HIWORD(lParam);
-
-                if (gridplacecenter == true) {
-                    if (bluegoals[i].y > 0 && bluegoals[i].y < MAPBARRIER) {
-                        if (bluegoals[i].x < MAPBARRIER && bluegoals[i].x > 0) {
-                            bluegoals[i].x = (((bluegoals[i].x - gridoffsetX) / gridwidth) * gridwidth) + (.5 * gridwidth) + gridoffsetX;
-                            bluegoals[i].y = (((bluegoals[i].y - gridoffsetY) / gridheight) * gridheight) + (.5 * gridheight) + gridoffsetY;
-                        }
-                    }
-                }
-
-                if (bluegoals[i].x > MAPBARRIER || bluegoals[i].x < 0 || bluegoals[i].y > MAPBARRIER || bluegoals[i].y < 0) {
-                    bluegoals[i].round = NULL;
-                }
-
-                return 0;
-            }toomany(); return 0;
-
-        }
+        placeObject(mapData, object, LOWORD(lParam), HIWORD(lParam));
 
         return 0;
     case WM_RBUTTONDOWN:
@@ -377,10 +121,8 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
         /////////////////////////////////////
 
     case WM_VSCROLL:
-        switch (LOWORD(wParam)) {
-            //case SB_ENDSCROLL:
-            //case SB_BOTTOM:
-
+        switch (LOWORD(wParam))
+        {
         case SB_THUMBTRACK:
 
         case SB_THUMBPOSITION:
@@ -403,13 +145,13 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
             render();
             return 0;
         case SB_LINEDOWN:
-            if (ypos >= MAPBARRIER) { return 0; }
+            if (ypos >= mapData.mapBarrier) { return 0; }
             ypos = ypos + 10;
             SetScrollPos(hwnd, SB_VERT, ypos, TRUE);
             render();
             return 0;
         case SB_PAGEDOWN:
-            if (ypos >= MAPBARRIER) { return 0; }
+            if (ypos >= mapData.mapBarrier) { return 0; }
             ypos = ypos + 50;
             SetScrollPos(hwnd, SB_VERT, ypos, TRUE);
             render();
@@ -440,13 +182,13 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
             render();
             return 0;
         case SB_LINERIGHT:
-            if (xpos >= MAPBARRIER) { return 0; }
+            if (xpos >= mapData.mapBarrier) { return 0; }
             xpos = xpos + 10;
             render();
             SetScrollPos(hwnd, SB_HORZ, xpos, TRUE);
             return 0;
         case SB_PAGERIGHT:
-            if (xpos >= MAPBARRIER) { return 0; }
+            if (xpos >= mapData.mapBarrier) { return 0; }
             xpos = xpos + 50;
             render();
             SetScrollPos(hwnd, SB_HORZ, xpos, TRUE);
@@ -454,15 +196,6 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
         }
 
         return 0;
-
-
-        //case WM_SIZE:
-            //gluOrtho2D(0, HIWORD(lParam),LOWORD(lParam),0);
-            //render();
-            //resWidth = HIWORD(lParam);
-            //resHeight = LOWORD(lParam);
-            //glsetup();
-            //return 0;
     case WM_QUIT:
 
 
@@ -617,8 +350,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
 
     return msg.wParam;
 }
-
-
 
 void minimap()
 {

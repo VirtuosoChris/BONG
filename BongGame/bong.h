@@ -9,7 +9,6 @@
 
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 
-#define DEFAULT 1000
 #define MINUPV 10
 #define RED 0
 #define BLUE 1
@@ -50,100 +49,45 @@ LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 #define HELP 3
 #define HIGHSCORES 4
 
-struct particle{
-double vtimecreated;
-bool active;
-int parts[10][2];
-float colors[10][3];
+#include <BongGameObjects.h>
+#include <BongMapLegacy.h>
+
+struct particle
+{
+	double vtimecreated;
+	bool active;
+	int parts[10][2];
+	float colors[10][3];
 };
 
-struct score{
-int value;
-float x;
-int y;
-int color;
-double vtimecreated;
-bool active;
-};
-
-
-
-struct message{
-char msg[100];
-int x;
-int y;
-bool active;
-};
-
-struct menuButton{
-int x;
-int y;
-int width;
-int height;
-char description[100]; //text the button will show
-bool visible; //is it visible?
-void (*pf)();  //pointer to the function that will be called when the button is clicked
-};
-
-struct goal{
-int color;
-int width;
-int height;
-int x;
-int round;
-int y;
-};
-
-struct brick{
-bool breakable;
-bool broken;
-int x;
-int y;
-int width;
-int round;
-int height;
-};
-
-struct bouncer{
-	int x;
-	int y;
-	int radius;
-	int round;
-	int multiplier;
-};
-
-struct essence{
-	int x;
+struct score
+{
+	int value;
+	float x;
 	int y;
 	int color;
-	int radius;
-	int round;
-	};
+	double vtimecreated;
+	bool active;
+};
 
-struct paddle{
+struct message
+{
+	char msg[100];
 	int x;
 	int y;
-	int color;
+	bool active;
+};
+
+struct menuButton
+{
+	int x;
+	int y;
 	int width;
 	int height;
+	char description[100]; //text the button will show
+	bool visible; //is it visible?
+	void (*pf)();  //pointer to the function that will be called when the button is clicked
 };
-
-struct ball{
-	float x;
-	float y;
-	float lx;
-	float ly;
-	float yVec;
-	float xVec;
-	int belongsTo;
-	int mountedColor;
-	int round;
-	int radius;
-	int angle;
-	int speed;
-};
-
-
 
 
 void gameQuit();

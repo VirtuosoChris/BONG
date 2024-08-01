@@ -8,20 +8,8 @@ extern int fps;
 extern int gameRound;
 extern int resWidth;
 extern int resHeight;
-extern paddle bluepaddle;
-extern goal redgoals[3000];
-extern goal bluegoals[3000];
-extern brick bricks[3000];
-extern brick blocks[3000];
-//extern paddle rpaddles[4];
-//extern paddle bpaddles[4];
-extern paddle redpaddle;
-extern bouncer bouncers[3000];
-extern essence redessences[3000];
-extern essence blueessences[3000];
-extern ball balls[500];
+
 extern ball MainBall;
-extern int MAPBARRIER;
 extern int scores[2];
 extern bool gHelp;
 

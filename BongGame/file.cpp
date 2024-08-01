@@ -11,11 +11,9 @@ extern int MAPBARRIER;
 
 extern unsigned char *bitmap;
 extern BITMAPINFOHEADER biHead;
-extern paddle bluepaddle;
 
 void openfile()
 {
-
 	extern char MAPNAME[100];
 
 	extern int gameRound;

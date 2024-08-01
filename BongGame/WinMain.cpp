@@ -57,31 +57,21 @@ int cursorX, cursorY;
 
 particle particles[25];
 int scores[2];
-goal redgoals[3000];
-goal bluegoals[3000];
-brick bricks[3000];
-brick blocks[3000];
-paddle redpaddle;
-paddle bluepaddle;
 
 paddle redpaddlelast;
 paddle bluepaddlelast;
 
-bouncer bouncers[3000];
-essence redessences[3000];
-essence blueessences[3000];
 ball balls[500];
 ball MainBall;
-int MAPBARRIER = 0;
+
 int gameRound = 1;
-char imgString[100];
-char musString[100];
 
 menuButton gameMenuButtons[20];
 
+BongMapLegacy mapData;
 
-LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {
-
+LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
     static PIXELFORMATDESCRIPTOR pfd = {
                   sizeof(PIXELFORMATDESCRIPTOR),
                   1, //version
@@ -100,7 +90,8 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
                   0,0,0//layer masks
     };
 
-    switch (message) {
+    switch (message)
+    {
 
     case WM_CREATE:
 
@@ -129,13 +120,12 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
 
         if (gamePaused) { return 0; }
 
-        moveamount = MAPBARRIER * ((float)LOWORD(lParam) / (float)resWidth);
-        PaddleBall.xVec = moveamount - PaddleBall.x;//PaddleBall.x - PaddleBall.lx;
-        PaddleBall.yVec = 0; //PaddleBall.y - PaddleBall.ly;
-        PaddleBall.radius = bluepaddle.height;
+        moveamount = mapData.mapBarrier * ((float)LOWORD(lParam) / (float)resWidth);
+        PaddleBall.xVec = moveamount - PaddleBall.x;
+        PaddleBall.yVec = 0;
+        PaddleBall.radius = mapData.bluePaddle.height;
         PaddleBall.belongsTo = WHITE;
 
-        //SetCursorPos(0,0);
         return 0;
 
     case WM_LBUTTONDOWN:
@@ -172,11 +162,12 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) 
         {
         case VK_ESCAPE:
 
-            if (gHelp) {
+            if (gHelp)
+            {
                 gameHelp();
             }
 
-            if (bluepaddle.x != NULL)
+            if (mapData.bluePaddle.x != NULL)
             {
                 CallMenu();
             }
@@ -373,7 +364,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
 
 
 
-void gameQuit() {
+void gameQuit()
+{
     wglMakeCurrent(hDC, hRC);
     wglDeleteContext(hRC);
     UnregisterClass("BongEditor", hInstanceG);

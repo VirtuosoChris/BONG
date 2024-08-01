@@ -18,7 +18,6 @@ extern int scores[2];
 extern int gameRound;
 extern int resWidth;
 extern int resHeight;
-extern paddle bluepaddle;
 extern goal redgoals[3000];
 extern goal bluegoals[3000];
 extern brick bricks[3000];

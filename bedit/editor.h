@@ -9,9 +9,6 @@ INT_PTR  CALLBACK DlgProcOpt(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPar
 INT_PTR  CALLBACK DlgProcObject(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);
 LRESULT CALLBACK MiniMapProc (HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
 
-
-#define DEFAULT 1000
-
 #define RED 0
 #define BLUE 1
 #define GREEN 2
@@ -53,62 +50,26 @@ void glsetup();
 void drawObject(int x, int y, int width, int height);
 void render();
 
+#include <BongGameObjects.h>
+#include <BongMapLegacy.h>
 
+struct SelectedObjectState
+{
+    goal* selectedgoal = NULL;
+    brick* selectedbrick = NULL;
+    paddle* selectedpaddle = NULL;
+    bouncer* selectedbouncer = NULL;
+    essence* selectedessence = NULL;
+    ball* selectedball = NULL;
 
-struct goal{
-int color;
-int width;
-int height;
-int x;
-int round;
-int y;
+    SelectedObjectState() {}
+    SelectedObjectState(goal& igoal) : selectedgoal(&igoal) {}
+    SelectedObjectState(brick& ibrick) : selectedbrick(&ibrick) {}
+    SelectedObjectState(paddle& ipaddle) : selectedpaddle(&ipaddle) {}
+    SelectedObjectState(bouncer& ibouncer) : selectedbouncer(&ibouncer) {}
+    SelectedObjectState(essence& iessence) : selectedessence(&iessence) {}
+    SelectedObjectState(ball& iball) : selectedball(&iball) {}
 };
 
-struct brick{
-bool breakable;
-bool broken;
-int x;
-int y;
-int width;
-int round;
-int height;
-};
+void placeObject(BongMapLegacy& mapData, int object, int xClick, int yClick);
 
-struct bouncer{
-	int x;
-	int y;
-	int radius;
-	int round;
-	int multiplier;
-};
-
-struct essence{
-	int x;
-	int y;
-	int color;
-	int radius;
-	int round;
-	};
-
-struct paddle{
-	int x;
-	int y;
-	int color;
-	int width;
-	int height;
-};
-
-struct ball{
-	float x;
-	float y;
-	float lx;
-	float ly;
-	float yVec;
-	float xVec;
-	int belongsTo;
-	int mountedColor;
-	int round;
-	int radius;
-	int angle;
-	int speed;
-};

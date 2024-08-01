@@ -3,9 +3,10 @@
 #include <gl/glu.h>
 #include "editor.h"
 #include "resource.h"
+#include <cassert>
+#include <fstream>
 
 extern bool bGrid;
-extern int MAPBARRIER;
 extern HWND hwnd;
 extern int cx;
 extern int cy;
@@ -16,25 +17,12 @@ extern int ypos;
 
 extern char objectstring[];
 
-extern paddle rpaddles[4];
-extern paddle bpaddles[4];
-extern ball balls[500];
 extern int gameRound;
-extern char imgString[100];
-extern char musString[100];
-
-extern goal redgoals[3000];
-extern goal bluegoals[3000];
-extern brick bricks[3000];
-extern brick blocks[3000];
-extern paddle redpaddle;//eventually add ability to add more paddles
-extern paddle bluepaddle;
-extern bouncer bouncers[3000];
-extern essence redessences[3000];
-extern essence blueessences[3000];
 
 TCHAR szFileName[MAX_PATH], szTitleName[MAX_PATH];
 OPENFILENAME ofn;
+
+extern BongMapLegacy mapData;
 
 void about()
 {
@@ -60,38 +48,17 @@ void newMap()
     {
     case IDYES:	save();
     case IDNO:
-        MAPBARRIER = DEFAULT;
-        SetScrollRange(hwnd, SB_HORZ, 0, MAPBARRIER, FALSE);
-        SetScrollRange(hwnd, SB_VERT, 0, MAPBARRIER, TRUE);
+
+        mapData = BongMapLegacy();
+
+        SetScrollRange(hwnd, SB_HORZ, 0, mapData.mapBarrier, FALSE);
+        SetScrollRange(hwnd, SB_VERT, 0, mapData.mapBarrier, TRUE);
+
         xpos = 0;
         ypos = 0;
+
         SetScrollPos(hwnd, SB_VERT, ypos, TRUE);
         SetScrollPos(hwnd, SB_HORZ, xpos, TRUE);
-
-        for (int i = 0; i < 9; i++) {
-            balls[i].round = NULL;
-        }
-
-        for (int i = 0; i < 4; i++) {
-            rpaddles[i].x = 0;
-            bpaddles[i].x = 0;
-
-        }
-
-        for (int i = 0; i < 3000; i++) {
-            redgoals[i].round = 0;
-            bluegoals[i].round = 0;
-            bricks[i].round = 0;
-            blocks[i].round = 0;
-            //paddle redpaddle;//eventually add ability to add more paddles
-            //paddle bluepaddle;
-            bouncers[i].round = 0;
-            redessences[i].round = 0;
-            blueessences[i].round = 0;
-        }
-
-        redpaddle.x = NULL;
-        bluepaddle.x = NULL;
 
         break;
     case IDCANCEL:
@@ -122,32 +89,27 @@ void grid()
     DialogBox(hInstanceG, "grid", hwnd, DlgProc);
 }
 
-void rightclick() {
+// brute force check every possible game object :(
+void rightclick()
+{
     extern HINSTANCE hInstanceG;
-    extern goal* selectedgoal;
-    extern brick* selectedbrick;
-    extern paddle* selectedpaddle;
-    extern bouncer* selectedbouncer;
-    extern essence* selectedessence;
-    extern ball* selectedball;
+
+    extern SelectedObjectState selectedObject;
 
     int clickX = xpos - (resWidth / 2) + cx;
     int clickY = ypos - (resHeight / 2) + cy;
     int i = 0;
-    //block clicked
-    for (i = 0; i < 3000; i++)
-    {
-        if (clickX > (blocks[i].x - blocks[i].width) && clickX < blocks[i].x + blocks[i].width) {
-            if (clickY > (blocks[i].y - blocks[i].height) && clickY < blocks[i].y + blocks[i].height) {
-                if (blocks[i].round == gameRound || blocks[i].round == 4) {
 
-                    selectedbrick = &blocks[i];
-                    selectedgoal = NULL;
-                    selectedpaddle = NULL;
-                    selectedbouncer = NULL;
-                    selectedessence = NULL;
-                    selectedpaddle = NULL;
-                    selectedball = NULL;
+    for (i = 0; i < mapData.blocks.size(); i++)
+    {
+        if (clickX > (mapData.blocks[i].x - mapData.blocks[i].width) && clickX < mapData.blocks[i].x + mapData.blocks[i].width)
+        {
+            if (clickY > (mapData.blocks[i].y - mapData.blocks[i].height) && clickY < mapData.blocks[i].y + mapData.blocks[i].height)
+            {
+                if (mapData.blocks[i].round == gameRound || mapData.blocks[i].round == 4)
+                {
+                    selectedObject = SelectedObjectState(mapData.blocks[i]);
+
                     sprintf(objectstring, "Block %i", i);
                     DialogBox(hInstanceG, "object", hwnd, DlgProcObject);
                 }
@@ -156,20 +118,16 @@ void rightclick() {
     }
 
     //brick clicked
-    for (i = 0; i < 3000; i++)
+    for (i = 0; i < mapData.bricks.size(); i++)
     {
-        if (clickX > (bricks[i].x - bricks[i].width) && clickX < bricks[i].x + bricks[i].width)
+        if (clickX > (mapData.bricks[i].x - mapData.bricks[i].width) && clickX < mapData.bricks[i].x + mapData.bricks[i].width)
         {
-            if (clickY > (bricks[i].y - bricks[i].height) && clickY < bricks[i].y + bricks[i].height)
+            if (clickY > (mapData.bricks[i].y - mapData.bricks[i].height) && clickY < mapData.bricks[i].y + mapData.bricks[i].height)
             {
-                if (bricks[i].round == gameRound || bricks[i].round == 4) {
-                    selectedbrick = &bricks[i];
-                    selectedgoal = NULL;
-                    selectedpaddle = NULL;
-                    selectedbouncer = NULL;
-                    selectedessence = NULL;
-                    selectedpaddle = NULL;
-                    selectedball = NULL;
+                if (mapData.bricks[i].round == gameRound || mapData.bricks[i].round == 4)
+                {
+                    selectedObject = SelectedObjectState(mapData.bricks[i]);
+
                     sprintf(objectstring, "Brick %i", i);
                     DialogBox(hInstanceG, "object", hwnd, DlgProcObject);
                 }
@@ -177,39 +135,28 @@ void rightclick() {
         }
     }
 
-    for (i = 0; i < 4; i++)
+    for (i = 0; i < mapData.bluePaddles.size(); i++)
     {
-        if (clickX > (bpaddles[i].x - bpaddles[i].width) && clickX < bpaddles[i].x + bpaddles[i].width)
+        if (clickX > (mapData.bluePaddles[i].x - mapData.bluePaddles[i].width) && clickX < mapData.bluePaddles[i].x + mapData.bluePaddles[i].width)
         {
-            if (clickY > (bpaddles[i].y - bpaddles[i].height) && clickY < bpaddles[i].y + bpaddles[i].height)
+            if (clickY > (mapData.bluePaddles[i].y - mapData.bluePaddles[i].height) && clickY < mapData.bluePaddles[i].y + mapData.bluePaddles[i].height)
             {
-                //	  if(bricks[i].round == round || bricks[i].round == 4){
-                selectedbrick = NULL;
-                selectedgoal = NULL;
-                selectedpaddle = NULL;
-                selectedbouncer = NULL;
-                selectedessence = NULL;
-                selectedpaddle = &bpaddles[i];
-                selectedball = NULL;
+                selectedObject = SelectedObjectState(mapData.bluePaddles[i]);
+
                 sprintf(objectstring, "BLUE PADDLE %i", i);
                 DialogBox(hInstanceG, "object", hwnd, DlgProcObject);
             }
         }
     }
 
-    for (i = 0; i < 4; i++)
+    for (i = 0; i < mapData.redPaddles.size(); i++)
     {
-        if (clickX > (rpaddles[i].x - rpaddles[i].width) && clickX < rpaddles[i].x + rpaddles[i].width)
+        if (clickX > (mapData.redPaddles[i].x - mapData.redPaddles[i].width) && clickX < mapData.redPaddles[i].x + mapData.redPaddles[i].width)
         {
-            if (clickY > (rpaddles[i].y - rpaddles[i].height) && clickY < rpaddles[i].y + rpaddles[i].height)
+            if (clickY > (mapData.redPaddles[i].y - mapData.redPaddles[i].height) && clickY < mapData.redPaddles[i].y + mapData.redPaddles[i].height)
             {
-                selectedbrick = NULL;
-                selectedgoal = NULL;
-                selectedpaddle = NULL;
-                selectedbouncer = NULL;
-                selectedessence = NULL;
-                selectedpaddle = &rpaddles[i];
-                selectedball = NULL;
+                selectedObject = SelectedObjectState(mapData.redPaddles[i]);
+
                 sprintf(objectstring, "RED PADDLE %i", i);
                 DialogBox(hInstanceG, "object", hwnd, DlgProcObject);
             }
@@ -217,20 +164,16 @@ void rightclick() {
     }
 
     //red essence clicked
-    for (i = 0; i < 3000; i++)
+    for (i = 0; i < mapData.redEssences.size(); i++)
     {
-        if (clickX > (redessences[i].x - redessences[i].radius) && clickX < redessences[i].x + redessences[i].radius)
+        if (clickX > (mapData.redEssences[i].x - mapData.redEssences[i].radius) && clickX < mapData.redEssences[i].x + mapData.redEssences[i].radius)
         {
-            if (clickY > (redessences[i].y - redessences[i].radius) && clickY < redessences[i].y + redessences[i].radius)
+            if (clickY > (mapData.redEssences[i].y - mapData.redEssences[i].radius) && clickY < mapData.redEssences[i].y + mapData.redEssences[i].radius)
             {
-                if (redessences[i].round == gameRound || redessences[i].round == 4) {
-                    selectedbrick = NULL;
-                    selectedgoal = NULL;
-                    selectedpaddle = NULL;
-                    selectedbouncer = NULL;
-                    selectedessence = &redessences[i];
-                    selectedpaddle = NULL;
-                    selectedball = NULL;
+                if (mapData.redEssences[i].round == gameRound || mapData.redEssences[i].round == 4)
+                {
+                    selectedObject = SelectedObjectState(mapData.redEssences[i]);
+
                     sprintf(objectstring, "red essence %i", i);
                     DialogBox(hInstanceG, "object", hwnd, DlgProcObject);
                 }
@@ -238,44 +181,16 @@ void rightclick() {
         }
     }
 
-    for (i = 0; i < 3000; i++)
+    for (i = 0; i < mapData.blueEssences.size(); i++)
     {
-        if (clickX > (bouncers[i].x - bouncers[i].radius) && clickX < bouncers[i].x + bouncers[i].radius)
+        if (clickX > (mapData.blueEssences[i].x - mapData.blueEssences[i].radius) && clickX < mapData.blueEssences[i].x + mapData.blueEssences[i].radius)
         {
-            if (clickY > (bouncers[i].y - bouncers[i].radius) && clickY < bouncers[i].y + bouncers[i].radius)
+            if (clickY > (mapData.blueEssences[i].y - mapData.blueEssences[i].radius) && clickY < mapData.blueEssences[i].y + mapData.blueEssences[i].radius)
             {
-                if (bouncers[i].round == gameRound || bouncers[i].round == 4)
+                if (mapData.blueEssences[i].round == gameRound || mapData.blueEssences[i].round == 4)
                 {
-                    selectedbrick = NULL;
-                    selectedgoal = NULL;
-                    selectedpaddle = NULL;
-                    selectedbouncer = &bouncers[i];
-                    selectedessence = NULL;
-                    selectedpaddle = NULL;
-                    selectedball = NULL;
-                    sprintf(objectstring, "bouncer %i", i);
-                    DialogBox(hInstanceG, "object", hwnd, DlgProcObject);
-                }
-            }
-        }
-    }
+                    selectedObject = SelectedObjectState(mapData.blueEssences[i]);
 
-
-    for (i = 0; i < 3000; i++)
-    {
-        if (clickX > (blueessences[i].x - blueessences[i].radius) && clickX < blueessences[i].x + blueessences[i].radius)
-        {
-            if (clickY > (blueessences[i].y - blueessences[i].radius) && clickY < blueessences[i].y + blueessences[i].radius)
-            {
-                if (blueessences[i].round == gameRound || blueessences[i].round == 4)
-                {
-                    selectedbrick = NULL;
-                    selectedgoal = NULL;
-                    selectedpaddle = NULL;
-                    selectedbouncer = NULL;
-                    selectedessence = &blueessences[i];
-                    selectedpaddle = NULL;
-                    selectedball = NULL;
                     sprintf(objectstring, "Blue Essence %i", i);
                     DialogBox(hInstanceG, "object", hwnd, DlgProcObject);
                 }
@@ -283,20 +198,32 @@ void rightclick() {
         }
     }
 
-    for (i = 0; i < 500; i++)
+    for (i = 0; i < mapData.bouncers.size(); i++)
     {
-        if (clickX > (balls[i].x - balls[i].radius) && clickX < balls[i].x + balls[i].radius)
+        if (clickX > (mapData.bouncers[i].x - mapData.bouncers[i].radius) && clickX < mapData.bouncers[i].x + mapData.bouncers[i].radius)
         {
-            if (clickY > (balls[i].y - balls[i].radius) && clickY < balls[i].y + balls[i].radius)
+            if (clickY > (mapData.bouncers[i].y - mapData.bouncers[i].radius) && clickY < mapData.bouncers[i].y + mapData.bouncers[i].radius)
             {
-                if (balls[i].round == gameRound || balls[i].round == 4) {
-                    selectedbrick = NULL;
-                    selectedgoal = NULL;
-                    selectedpaddle = NULL;
-                    selectedbouncer = NULL;
-                    selectedessence = NULL;
-                    selectedball = &balls[i];
-                    selectedpaddle = NULL;
+                if (mapData.bouncers[i].round == gameRound || mapData.bouncers[i].round == 4)
+                {
+                    selectedObject = SelectedObjectState(mapData.bouncers[i]);
+
+                    sprintf(objectstring, "bouncer %i", i);
+                    DialogBox(hInstanceG, "object", hwnd, DlgProcObject);
+                }
+            }
+        }
+    }
+
+    for (i = 0; i < mapData.balls.size(); i++)
+    {
+        if (clickX > (mapData.balls[i].x - mapData.balls[i].radius) && clickX < mapData.balls[i].x + mapData.balls[i].radius)
+        {
+            if (clickY > (mapData.balls[i].y - mapData.balls[i].radius) && clickY < mapData.balls[i].y + mapData.balls[i].radius)
+            {
+                if (mapData.balls[i].round == gameRound || mapData.balls[i].round == 4)
+                {
+                    selectedObject = SelectedObjectState(mapData.balls[i]);
                     sprintf(objectstring, "BALL %i", i);
                     DialogBox(hInstanceG, "object", hwnd, DlgProcObject);
                 }
@@ -304,21 +231,16 @@ void rightclick() {
         }
     }
 
-    for (i = 0; i < 3000; i++)
+    for (i = 0; i < mapData.redGoals.size(); i++)
     {
-        if (clickX > (redgoals[i].x - redgoals[i].width) && clickX < redgoals[i].x + redgoals[i].width)
+        if (clickX > (mapData.redGoals[i].x - mapData.redGoals[i].width) && clickX < mapData.redGoals[i].x + mapData.redGoals[i].width)
         {
-            if (clickY > (redgoals[i].y - redgoals[i].height) && clickY < redgoals[i].y + redgoals[i].height)
+            if (clickY > (mapData.redGoals[i].y - mapData.redGoals[i].height) && clickY < mapData.redGoals[i].y + mapData.redGoals[i].height)
             {
-                if (redgoals[i].round == gameRound || redgoals[i].round == 4)
+                if (mapData.redGoals[i].round == gameRound || mapData.redGoals[i].round == 4)
                 {
-                    selectedbrick = NULL;
-                    selectedessence = NULL;
-                    selectedpaddle = NULL;
-                    selectedbouncer = NULL;
-                    selectedgoal = &redgoals[i];
-                    selectedpaddle = NULL;
-                    selectedball = NULL;
+                    selectedObject = SelectedObjectState(mapData.redGoals[i]);
+
                     sprintf(objectstring, "Red Goal %i", i);
                     DialogBox(hInstanceG, "object", hwnd, DlgProcObject);
                 }
@@ -326,20 +248,16 @@ void rightclick() {
         }
     }
 
-    for (i = 0; i < 3000; i++)
+    for (i = 0; i < mapData.blueGoals.size(); i++)
     {
-        if (clickX > (bluegoals[i].x - bluegoals[i].width) && clickX < bluegoals[i].x + bluegoals[i].width)
+        if (clickX > (mapData.blueGoals[i].x - mapData.blueGoals[i].width) && clickX < mapData.blueGoals[i].x + bluegoals[i].width)
         {
-            if (clickY > (bluegoals[i].y - bluegoals[i].height) && clickY < bluegoals[i].y + bluegoals[i].height)
+            if (clickY > (mapData.blueGoals[i].y - mapData.blueGoals[i].height) && clickY < mapData.blueGoals[i].y + mapData.blueGoals[i].height)
             {
-                if (bluegoals[i].round == gameRound || bluegoals[i].round == 4) {
-                    selectedbrick = NULL;
-                    selectedessence = NULL;
-                    selectedpaddle = NULL;
-                    selectedbouncer = NULL;
-                    selectedgoal = &bluegoals[i];
-                    selectedpaddle = NULL;
-                    selectedball = NULL;
+                if (mapData.blueGoals[i].round == gameRound || mapData.blueGoals[i].round == 4)
+                {
+                    selectedObject = SelectedObjectState(mapData.blueGoals[i]);
+
                     sprintf(objectstring, "Blue Goal %i", i);
                     DialogBox(hInstanceG, "object", hwnd, DlgProcObject);
                 }
@@ -348,22 +266,15 @@ void rightclick() {
     }
 }
 
-
-
-
-
-
-
-void mapoptions() {
+void mapoptions()
+{
     extern HINSTANCE hInstanceG;
     DialogBox(hInstanceG, "IDD_MAP", hwnd, DlgProcOpt);
 }
 
-
-void open() {
-
+void open()
+{
     static TCHAR szFilter[] = TEXT("BONG MAPS(*.bng)\0*.bng\0");
-
 
     ofn.lStructSize = sizeof(OPENFILENAME);
     ofn.hwndOwner = hwnd;
@@ -390,43 +301,31 @@ void open() {
     ofn.lpstrFileTitle = szTitleName;
     ofn.Flags = OFN_HIDEREADONLY | OFN_CREATEPROMPT;
 
-    if (GetOpenFileName(&ofn)) {
-        FILE* fp;
-        fp = fopen(szFileName, "rb");
-        fread(&MAPBARRIER, sizeof(int), 1, fp);
-        fread(&bluepaddle, sizeof(paddle), 1, fp);
-        fread(&redpaddle, sizeof(paddle), 1, fp);
-        fread(&redgoals, sizeof(goal), 3000, fp);
-        fread(&bluegoals, sizeof(goal), 3000, fp);
-        fread(&bricks, sizeof(brick), 3000, fp);
-        fread(&blocks, sizeof(brick), 3000, fp);
-        fread(&bouncers, sizeof(bouncer), 3000, fp);
-        fread(&redessences, sizeof(essence), 3000, fp);
-        fread(&blueessences, sizeof(essence), 3000, fp);
-        fread(&rpaddles, sizeof(paddle), 4, fp);
-        fread(&bpaddles, sizeof(paddle), 4, fp);
-        fread(&balls, sizeof(ball), 500, fp);
-        fread(&imgString, sizeof(char), 100, fp);
-        fread(&musString, sizeof(char), 100, fp);
-        fclose(fp);
+    if (GetOpenFileName(&ofn))
+    {
+        std::ifstream inFile(szFileName, std::ios::in | std::ios::binary);
+
+        if (inFile.is_open())
+        {
+            mapData = BongMapLegacy(inFile);
+        }
+
+        inFile.close();
     }
 
-
-    SetScrollRange(hwnd, SB_HORZ, 0, MAPBARRIER, FALSE);
-    SetScrollRange(hwnd, SB_VERT, 0, MAPBARRIER, TRUE);
+    SetScrollRange(hwnd, SB_HORZ, 0, mapData.mapBarrier, FALSE);
+    SetScrollRange(hwnd, SB_VERT, 0, mapData.mapBarrier, TRUE);
     xpos = 0;
     ypos = 0;
     SetScrollPos(hwnd, SB_VERT, ypos, TRUE);
     SetScrollPos(hwnd, SB_HORZ, xpos, TRUE);
-
 }
 
 
 
-void open2() {
-
+void open2()
+{
     static TCHAR szFilter[] = TEXT("Bitmaps (*.bmp)\0*.bmp\0");
-
 
     ofn.lStructSize = sizeof(OPENFILENAME);
     ofn.hwndOwner = hwnd;
@@ -453,13 +352,9 @@ void open2() {
     ofn.lpstrFileTitle = szTitleName;
     ofn.Flags = OFN_HIDEREADONLY | OFN_CREATEPROMPT;
 
-    if (GetOpenFileName(&ofn)) {
-
-        //MessageBox(hwnd,szTitleName,szFileName,MB_OK);
-        sprintf(imgString, szTitleName);
-        //MessageBox(hwnd,imgString,szFileName,MB_OK);
-
-
+    if (GetOpenFileName(&ofn))
+    {
+        sprintf(mapData.imgString, szTitleName);
     }
 }
 
@@ -469,9 +364,8 @@ void save()
 {
     static TCHAR szFilter[] = TEXT("BONG MAPS(*.bng)\0*.bng\0");
 
-    bluepaddle.x = 1000;
+    mapData.bluePaddle.x = 1000;
 
-    //	if(bluepaddle.x == NULL){needspaddle();return;}
     ofn.lStructSize = sizeof(OPENFILENAME);
     ofn.hwndOwner = hwnd;
     ofn.hInstance = NULL;
@@ -499,30 +393,18 @@ void save()
 
     if (GetSaveFileName(&ofn))
     {
-        FILE* fp;
-        fp = fopen(szFileName, "wb");
-        fwrite(&MAPBARRIER, sizeof(int), 1, fp);
-        fwrite(&bluepaddle, sizeof(paddle), 1, fp);
-        fwrite(&redpaddle, sizeof(paddle), 1, fp);
-        fwrite(&redgoals, sizeof(goal), 3000, fp);
-        fwrite(&bluegoals, sizeof(goal), 3000, fp);
-        fwrite(&bricks, sizeof(brick), 3000, fp);
-        fwrite(&blocks, sizeof(brick), 3000, fp);
-        fwrite(&bouncers, sizeof(bouncer), 3000, fp);
-        fwrite(&redessences, sizeof(essence), 3000, fp);
-        fwrite(&blueessences, sizeof(essence), 3000, fp);
-        fwrite(&rpaddles, sizeof(paddle), 4, fp);
-        fwrite(&bpaddles, sizeof(paddle), 4, fp);
-        fwrite(&balls, sizeof(ball), 500, fp);
-        fwrite(&imgString, sizeof(char), 100, fp);
-        fwrite(&musString, sizeof(char), 100, fp);
+        std::ofstream outFile(szFileName, std::ios::out | std::ios::binary);
 
+        if (outFile.is_open())
+        {
+            mapData.writeToStream(outFile);
+        }
 
-        fclose(fp);
+        outFile.close();
     }
-
 }
 
 void saveas()
 {
+    assert(0, "NYI");
 }

@@ -8,22 +8,13 @@ extern paddle bluepaddlelast;
 extern int gameRound;
 extern int resWidth;
 extern int resHeight;
-extern paddle bluepaddle;
-extern goal redgoals[3000];
-extern goal bluegoals[3000];
-extern brick bricks[3000];
-extern brick blocks[3000];
-extern paddle redpaddle;//eventually add ability to add more paddles
-extern bouncer bouncers[3000];
-extern essence redessences[3000];
-extern essence blueessences[3000];
+
 extern ball PaddleBall;
 extern ball PaddleBallRed;
 extern ball rPaddleBall[4];
 extern ball bPaddleBall[4];
 extern paddle redpaddlelast;
 
-extern ball balls[500];
 extern ball MainBall;
 extern int MAPBARRIER;
 
@@ -134,7 +125,6 @@ void setupGame()
     extern int scores[2];
     extern message gMessage;
     extern int lastBroken;
-    extern paddle redpaddle; extern paddle bluepaddle;
 
     bluepaddle.color = BLUE;
 

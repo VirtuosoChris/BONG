@@ -15,6 +15,7 @@ menufuncs.cpp
 resource.h
 resource.rc
 WinMain.cpp
+EditorPlaceObject.cpp
 )
 
 # Find OpenGL
@@ -26,3 +27,5 @@ target_link_libraries(bedit OpenGL::GL OpenGL::GLU winmm)
 set_target_properties(bedit PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
 
 set_target_properties(bedit PROPERTIES LINK_FLAGS "/ENTRY:WinMainCRTStartup")
+
+target_include_directories(bedit PUBLIC ../Common)
