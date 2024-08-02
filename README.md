@@ -10,7 +10,7 @@ At this point I would have learned a lot of my fundamentals from reading NeHe / 
 
 ![452906284_1212041410144525_1037393494449760745_n](https://github.com/user-attachments/assets/2bd88e21-c94b-481c-8385-e80d11a15428)
 
-For this project, the OpenGL Red Book 3rd Edition and Charles Petzold's massive tome on Win32 programming were my constant companions.   I would have carried them on the bus to school early in the morning, shoving them in my already overstuffed backpack.
+For this project, the OpenGL Red Book 3rd Edition and Charles Petzold's massive tome on Win32 programming were my constant companions.   I would have carried one or both of them on the bus to school early in the morning, shoving them in my already overstuffed backpack.
 
 I don't really have any interest in porting the game to new tech or remaking it but I'm making this repo
 1) for posterity
