@@ -353,7 +353,7 @@ ball doCollision(ball tBall)
             extern int lastBroken;
             lastBroken = tBall.belongsTo;
 
-            PlaySound("break.wav", NULL, 0x0001);
+            PlaySound("sounds/break.wav", NULL, SND_ASYNC | SND_FILENAME);
         }
     }
 
@@ -390,7 +390,7 @@ ball doCollision(ball tBall)
         cBall.xVec = cBall.xVec * cBall.speed;
         cBall.yVec = cBall.yVec * cBall.speed;
 
-        PlaySound("clang.wav", NULL, 0x0001);
+        PlaySound("sounds/clang.wav", NULL, SND_ASYNC | SND_FILENAME);
     }
 
     int brkCol = WHITE;

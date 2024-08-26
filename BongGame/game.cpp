@@ -295,7 +295,6 @@ void UpdateGame()
             if (MainBall.x > MAPBARRIER)
             {
                 MainBall.x = MAPBARRIER; MainBall.xVec = -MainBall.xVec;
-                //PlaySound("boing.wav",NULL,0x0001);
             }
 
             if (MainBall.y < 0)
@@ -308,7 +307,7 @@ void UpdateGame()
                 {
                     MainBall.round = 0;
                     scores[RED] += 50;
-                    PlaySound("boom.wav", NULL, 0x0001);
+                    PlaySound("sounds/boom.wav", NULL, 0x0001);
                     makeScore(MainBall.x, MainBall.y + 50, RED, 50);
                     makeParticle(MainBall.x, MainBall.y);
                     if (MainBall.belongsTo == BLUE) {
@@ -325,12 +324,11 @@ void UpdateGame()
                     MainBall.y = MAPBARRIER;
                     if (MainBall.belongsTo == WHITE) {
                         MainBall.yVec = -MainBall.yVec;
-                        //PlaySound("boing.wav",NULL,0x0001);
                     }
                     else {
                         MainBall.round = 0;
                         scores[BLUE] += 50;
-                        PlaySound("boom.wav", NULL, 0x0001);
+                        PlaySound("sounds/boom.wav", NULL, SND_ASYNC | SND_FILENAME);
                         makeParticle(MainBall.x, MainBall.y - 25);
                         makeScore(MainBall.x, MainBall.y, BLUE, 50);
                     }
@@ -398,13 +396,14 @@ void UpdateGame()
                     balls[i].y = MAPBARRIER;
                     balls[i].yVec = -balls[i].yVec;
                     ////////////////////
-                    if (balls[i].belongsTo == WHITE) {
-                        //PlaySound("boing.wav",NULL,0x0001);
+                    if (balls[i].belongsTo == WHITE)
+                    {
                     }
-                    else {
+                    else
+                    {
                         balls[i].round = 0;
                         scores[BLUE] += 50;
-                        PlaySound("boom.wav", NULL, 0x0001);
+                        PlaySound("sounds/boom.wav", NULL, SND_ASYNC | SND_FILENAME);
                         makeParticle(balls[i].x, balls[i].y - 25);
                         makeScore(balls[i].x, balls[i].y, BLUE, 50);
                     }
@@ -421,7 +420,7 @@ void UpdateGame()
                     else
                     {
                         balls[i].round = 0;
-                        PlaySound("boom.wav", NULL, 0x0001);
+                        PlaySound("sounds/boom.wav", NULL, SND_ASYNC | SND_FILENAME);
                         scores[RED] += 50;
                         makeParticle(balls[i].x, balls[i].y);
                         makeScore(balls[i].x, balls[i].y + 50, RED, 50);
