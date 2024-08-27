@@ -18,5 +18,5 @@ I don't really have any interest in porting the game to new tech or remaking it 
 1) for posterity
 2) I can do some cleanup / refactoring so the code is legible and easy to build
 
-The crappy MSPaint textures I made as well as the sound files are lost media, resulting in a minimalist appearance that is actually better than the original.  Replacing or finding the original  media files is on the agenda/
+The crappy MSPaint textures I made are lost media, resulting in a minimalist appearance that is actually better than the original.  Replacing or finding the original media files is on the agenda/
 
